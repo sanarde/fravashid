@@ -78,6 +78,32 @@ fail:
     return -1;
 }
 
+int fravashid_playlist_load_path(struct fravashid_playlist *list, const char *path)
+{
+    struct stat st;
+
+    list->paths = NULL;
+    list->count = 0;
+    list->current = 0;
+    if (stat(path, &st) != 0)
+        return -1;
+    if (S_ISDIR(st.st_mode))
+        return fravashid_playlist_load(list, path);
+    if (!S_ISREG(st.st_mode) || fravashid_media_kind(path) == FRAVASHID_MEDIA_NONE)
+        return -1;
+    list->paths = malloc(sizeof(*list->paths));
+    if (!list->paths)
+        return -1;
+    list->paths[0] = strdup(path);
+    if (!list->paths[0]) {
+        free(list->paths);
+        list->paths = NULL;
+        return -1;
+    }
+    list->count = 1;
+    return 0;
+}
+
 void fravashid_playlist_free(struct fravashid_playlist *list)
 {
     for (size_t i = 0; i < list->count; i++)
