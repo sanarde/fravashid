@@ -84,6 +84,26 @@ static void check_missing_and_empty(const char *dir)
     CHECK(fravashid_playlist_advance(&list, 1) == NULL);
 }
 
+static void check_load_path(const char *dir)
+{
+    struct fravashid_playlist list;
+    char path[512];
+
+    snprintf(path, sizeof(path), "%s/a.png", dir);
+    CHECK(fravashid_playlist_load_path(&list, path) == 0);
+    CHECK(list.count == 1);
+    CHECK_STR(fravashid_playlist_current(&list), path);
+    fravashid_playlist_free(&list);
+
+    snprintf(path, sizeof(path), "%s/notes.txt", dir);
+    CHECK(fravashid_playlist_load_path(&list, path) != 0);
+    CHECK(list.count == 0);
+
+    CHECK(fravashid_playlist_load_path(&list, dir) == 0);
+    CHECK(list.count == 3);
+    fravashid_playlist_free(&list);
+}
+
 int main(void)
 {
     char dir[] = "/tmp/fravashid-playlist-XXXXXX";
@@ -102,6 +122,7 @@ int main(void)
     check_load_and_walk(dir);
     check_shuffle(dir);
     check_missing_and_empty(dir);
+    check_load_path(dir);
 
     rmdir(sub);
     remove_in(dir, "b.JPG");
