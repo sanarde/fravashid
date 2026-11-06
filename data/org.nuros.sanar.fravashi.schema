@@ -1,0 +1,36 @@
+[schema]
+id = org.nuros.sanar.fravashi
+path = /org/nuros/sanar/fravashi/
+
+[wallpaper]
+type = s
+default =
+summary = Image, video or directory used on every output that has no entry in outputs
+
+[mode]
+type = s
+default = fill
+choices = fill; fit; stretch; center; tile
+summary = How an image or video is fitted to the output
+
+[color]
+type = s
+default = #000000
+summary = Background color in the form #rrggbb
+
+[interval]
+type = i
+default = 0
+min = 0
+max = 86400
+summary = Seconds between two files of a directory, zero keeps the first file
+
+[shuffle]
+type = b
+default = false
+summary = Play the files of a directory in random order
+
+[outputs]
+type = as
+default =
+summary = Wallpaper of single outputs as NAME=PATH entries
