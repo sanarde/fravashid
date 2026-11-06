@@ -1,6 +1,6 @@
 check_inc = include_directories('.')
 
-foreach name : ['layout', 'media', 'playlist']
+foreach name : ['layout', 'media', 'paint', 'playlist']
   test_exe = executable(
     'test_' + name,
     'test_' + name + '.c',
