@@ -11,6 +11,7 @@ struct fravashid_playlist {
 };
 
 int fravashid_playlist_load(struct fravashid_playlist *list, const char *dir);
+int fravashid_playlist_load_path(struct fravashid_playlist *list, const char *path);
 void fravashid_playlist_free(struct fravashid_playlist *list);
 void fravashid_playlist_shuffle(struct fravashid_playlist *list, unsigned seed);
 const char *fravashid_playlist_current(const struct fravashid_playlist *list);
