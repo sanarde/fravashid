@@ -1,0 +1,47 @@
+# Message catalog of fravashid.
+# This file is distributed under the same license as the fravashid package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fravashid 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-06 16:37+0500\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: cli/src/main.c:29
+#, c-format
+msgid "fravashi: cannot connect to the session bus: %s\n"
+msgstr ""
+
+#: cli/src/main.c:40
+#, c-format
+msgid "fravashi: fravashid does not answer: %s\n"
+msgstr ""
+
+#: cli/src/main.c:126
+#, c-format
+msgid "usage: fravashi set [-o OUTPUT] PATH\n"
+msgstr ""
+
+#: cli/src/main.c:130
+#, c-format
+msgid "fravashi: cannot resolve %s\n"
+msgstr ""
+
+#: cli/src/main.c:138
+#, c-format
+msgid "fravashi: cannot open the settings\n"
+msgstr ""
+
+#: cli/src/main.c:145
+#, c-format
+msgid "fravashi: cannot save the setting (%d)\n"
+msgstr ""
+
+#: cli/src/main.c:166
+#, c-format
+msgid "usage: fravashi get | next | prev | set [-o OUTPUT] PATH\n"
+msgstr ""
