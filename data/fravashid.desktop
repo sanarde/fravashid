@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Sanar Fravashid
+Comment=Wallpaper daemon
+Comment[ru]=Служба обоев
+Exec=fravashid
+Terminal=false
+NoDisplay=true
+StartupNotify=false
