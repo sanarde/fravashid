@@ -6,6 +6,7 @@ fravashid_core = static_library(
   'src/media.c',
   'src/paint.c',
   'src/playlist.c',
+  'src/spec.c',
   include_directories: fravashid_core_inc,
   gnu_symbol_visibility: 'hidden',
 )
