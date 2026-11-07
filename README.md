@@ -1,5 +1,11 @@
 # Sanar Fravashid
 
+> [!NOTE]
+> **Repository Mirrors**
+>
+> - **git.nuros.org** ([sanarde/fravashid](https://git.nuros.org/sanarde/fravashid)): primary, self-hosted Forgejo instance, accounts restricted to the core team.
+> - **GitHub** ([sanarde/fravashid](https://github.com/sanarde/fravashid)): mirror for external contributors. Issues and Pull Requests opened here are welcome and are reviewed and processed by the core team.
+
 ## About
 
 Wallpaper daemon for SanarDE that shows images and videos on Wayland and X11 and reads its settings from cfgd.
