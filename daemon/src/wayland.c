@@ -44,6 +44,7 @@ struct wl_output_data {
     struct wl_output *wl_output;
     uint32_t global;
     int scale;
+    int applied_scale;
     bool named;
     struct wl_surface *surface;
     struct zwlr_layer_surface_v1 *layer;
@@ -117,14 +118,19 @@ static void output_update(struct wl_output_data *output)
     int width = output->logical_width * output->scale;
     int height = output->logical_height * output->scale;
 
+    if (output->scale != output->applied_scale &&
+        wl_surface_get_version(output->surface) >= 3) {
+        wl_surface_set_buffer_scale(output->surface, output->scale);
+        output->applied_scale = output->scale;
+        if (output->configured)
+            wl_surface_commit(output->surface);
+    }
     if (!output->configured || width <= 0 || height <= 0)
         return;
     if (width == output->base.width && height == output->base.height)
         return;
     output->base.width = width;
     output->base.height = height;
-    if (wl_surface_get_version(output->surface) >= 3)
-        wl_surface_set_buffer_scale(output->surface, output->scale);
     for (int i = 0; i < BUFFER_COUNT; i++) {
         struct buffer *buffer = &output->buffers[i];
 
