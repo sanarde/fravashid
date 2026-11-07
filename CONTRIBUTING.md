@@ -2,7 +2,7 @@
 
 - Build and run the tests before sending a change: `meson setup build && meson test -C build`.
 - For changes in C code also run the tests with sanitizers: `meson setup build-san -Db_sanitize=address,undefined && meson test -C build-san`.
-- Backends, the video player and the D-Bus service have no automated tests. Check changes to them by hand on Wayland (a compositor with `wlr-layer-shell`) and on X11.
+- Settings, application logic, backends, the video player, the D-Bus service and the command line tool have no automated tests. Check changes to them by hand on Wayland (a compositor with `wlr-layer-shell`) and on X11.
 - Keep each change limited to one area.
 - Report bugs with the version, the steps to reproduce, and the observed output.
 
