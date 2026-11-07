@@ -34,3 +34,8 @@ summary = Play the files of a directory in random order
 type = as
 default =
 summary = Wallpaper of single outputs as NAME=PATH entries
+
+[profiles]
+type = as
+default =
+summary = Wallpaper of nawid profiles as PROFILE=PATH entries
