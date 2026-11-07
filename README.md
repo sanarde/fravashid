@@ -49,6 +49,7 @@ Settings are keys of the cfgd schema `org.nuros.sanar.fravashi`, path `/org/nuro
 - `interval`: seconds between two files of a directory. Zero keeps the first file.
 - `shuffle`: play the files of a directory in random order.
 - `outputs`: list of `NAME=PATH` entries that replace `wallpaper` on single outputs. Names are the ones of the compositor or of RandR, for example `DP-1`.
+- `profiles`: list of `PROFILE=PATH` entries that replace `wallpaper` on every output while that nawid profile is applied. An entry of `outputs` still wins on its output.
 
 ```sh
 cfgd set /org/nuros/sanar/fravashi/mode fit
@@ -61,10 +62,10 @@ cfgd set /org/nuros/sanar/fravashi/interval 600
 fravashi get
 fravashi next
 fravashi prev
-fravashi set [-o OUTPUT] PATH
+fravashi set [-o OUTPUT | -p PROFILE] PATH
 ```
 
-`get` prints the current file of every output. `next` and `prev` move every directory one file. `set` writes `wallpaper`, or the entry of `OUTPUT` in `outputs`, through cfgd.
+`get` prints the current file of every output. `next` and `prev` move every directory one file. `set` writes `wallpaper`, the entry of `OUTPUT` in `outputs`, or the entry of `PROFILE` in `profiles`, through cfgd.
 
 ## D-Bus interface
 
@@ -78,6 +79,10 @@ Session bus, name `org.nuros.sanar.Fravashi`, object `/org/nuros/sanar/fravashi`
 ## Seurat
 
 The first output reports its image to [Seurat](https://git.nuros.org/sanarde/seurat) with `SetWallpaper(s path)` so that system colors follow the wallpaper. A video or a missing file is reported as an empty path. The path is sent again when `seuratd` appears on the bus later than `fravashid`.
+
+## Nawid
+
+`fravashid` follows the monitor profile of [nawid](https://git.nuros.org/sanarde/nawid). It asks `GetProfile` when `org.nuros.sanar.Nawi` appears on the session bus and when it starts, and it reads the signal `Changed(s profile)`. The wallpaper of an output is the first of: its entry in `outputs`, the entry of the applied profile in `profiles`, `wallpaper`. Without nawid, or while no profile is applied, only `outputs` and `wallpaper` are used. When nawid leaves the bus, the last profile stays.
 
 ## Links
 
