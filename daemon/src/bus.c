@@ -16,6 +16,9 @@
 #define SEURAT_NAME "org.nuros.sanar.seurat"
 #define SEURAT_PATH "/org/nuros/sanar/seurat"
 #define SEURAT_INTERFACE "org.nuros.sanar.Seurat"
+#define NAWI_NAME "org.nuros.sanar.Nawi"
+#define NAWI_PATH "/org/nuros/sanar/nawi"
+#define NAWI_INTERFACE "org.nuros.sanar.Nawi"
 
 static const char introspection_xml[] =
     "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection "
@@ -133,6 +136,38 @@ static void send_seurat_wallpaper(struct fravashid_bus *bus)
     dbus_message_unref(call);
 }
 
+static void layout_reply(DBusPendingCall *pending, void *data)
+{
+    struct fravashid_bus *bus = data;
+    DBusMessage *reply = dbus_pending_call_steal_reply(pending);
+    const char *profile = NULL;
+
+    if (reply && dbus_message_get_type(reply) == DBUS_MESSAGE_TYPE_METHOD_RETURN &&
+        dbus_message_get_args(reply, NULL, DBUS_TYPE_STRING, &profile, DBUS_TYPE_INVALID))
+        fravashid_app_set_layout(bus->app, profile);
+    if (reply)
+        dbus_message_unref(reply);
+    dbus_pending_call_unref(pending);
+}
+
+static void query_layout(struct fravashid_bus *bus)
+{
+    DBusMessage *call;
+    DBusPendingCall *pending = NULL;
+
+    if (!bus->connection)
+        return;
+    call = dbus_message_new_method_call(NAWI_NAME, NAWI_PATH, NAWI_INTERFACE, "GetProfile");
+    if (!call)
+        return;
+    dbus_message_set_auto_start(call, FALSE);
+    if (dbus_connection_send_with_reply(bus->connection, call, &pending, 2000) && pending) {
+        if (!dbus_pending_call_set_notify(pending, layout_reply, bus, NULL))
+            dbus_pending_call_unref(pending);
+    }
+    dbus_message_unref(call);
+}
+
 static DBusHandlerResult handle_message(DBusConnection *connection,
                                         DBusMessage *message, void *data)
 {
@@ -145,8 +180,20 @@ static DBusHandlerResult handle_message(DBusConnection *connection,
         if (dbus_message_get_args(message, NULL, DBUS_TYPE_STRING, &name,
                                   DBUS_TYPE_STRING, &old_owner, DBUS_TYPE_STRING,
                                   &new_owner, DBUS_TYPE_INVALID) &&
-            strcmp(name, SEURAT_NAME) == 0 && new_owner[0] != '\0')
-            send_seurat_wallpaper(bus);
+            new_owner[0] != '\0') {
+            if (strcmp(name, SEURAT_NAME) == 0)
+                send_seurat_wallpaper(bus);
+            else if (strcmp(name, NAWI_NAME) == 0)
+                query_layout(bus);
+        }
+        return DBUS_HANDLER_RESULT_HANDLED;
+    }
+    if (dbus_message_is_signal(message, NAWI_INTERFACE, "Changed")) {
+        const char *profile = NULL;
+
+        if (dbus_message_get_args(message, NULL, DBUS_TYPE_STRING, &profile,
+                                  DBUS_TYPE_INVALID))
+            fravashid_app_set_layout(bus->app, profile);
         return DBUS_HANDLER_RESULT_HANDLED;
     }
     if (dbus_message_is_method_call(message, INTERFACE, "Next")) {
@@ -185,7 +232,8 @@ static const DBusObjectPathVTable vtable = {
 static DBusHandlerResult filter_message(DBusConnection *connection,
                                         DBusMessage *message, void *data)
 {
-    if (dbus_message_is_signal(message, "org.freedesktop.DBus", "NameOwnerChanged"))
+    if (dbus_message_is_signal(message, "org.freedesktop.DBus", "NameOwnerChanged") ||
+        dbus_message_is_signal(message, NAWI_INTERFACE, "Changed"))
         return handle_message(connection, message, data);
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
@@ -220,6 +268,15 @@ int fravashid_bus_open(struct fravashid_bus *bus, int epfd, struct fravashid_app
                        "interface='org.freedesktop.DBus',member='NameOwnerChanged',"
                        "arg0='" SEURAT_NAME "'",
                        NULL);
+    dbus_bus_add_match(bus->connection,
+                       "type='signal',sender='org.freedesktop.DBus',"
+                       "interface='org.freedesktop.DBus',member='NameOwnerChanged',"
+                       "arg0='" NAWI_NAME "'",
+                       NULL);
+    dbus_bus_add_match(bus->connection,
+                       "type='signal',sender='" NAWI_NAME "',path='" NAWI_PATH "',"
+                       "interface='" NAWI_INTERFACE "',member='Changed'",
+                       NULL);
     if (!dbus_connection_register_object_path(bus->connection, OBJECT_PATH, &vtable, bus) ||
         !dbus_connection_add_filter(bus->connection, filter_message, bus, NULL) ||
         !dbus_connection_set_watch_functions(bus->connection, add_watch, remove_watch,
@@ -227,6 +284,7 @@ int fravashid_bus_open(struct fravashid_bus *bus, int epfd, struct fravashid_app
         fprintf(stderr, "fravashid: cannot register D-Bus object\n");
         goto fail;
     }
+    query_layout(bus);
     return 0;
 
 fail:
