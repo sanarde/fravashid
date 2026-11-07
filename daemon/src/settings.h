@@ -19,12 +19,14 @@ struct fravashid_settings {
     bool shuffle;
     char **outputs;
     size_t outputs_count;
+    char **profiles;
+    size_t profiles_count;
 };
 
 void fravashid_settings_defaults(struct fravashid_settings *settings);
 void fravashid_settings_load(cfgd_t *cfgd, struct fravashid_settings *settings);
 void fravashid_settings_free(struct fravashid_settings *settings);
 const char *fravashid_settings_spec(const struct fravashid_settings *settings,
-                                    const char *output);
+                                    const char *output, const char *layout);
 
 #endif

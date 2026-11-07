@@ -12,6 +12,7 @@
 #define KEY_INTERVAL FRAVASHID_SETTINGS_PREFIX "interval"
 #define KEY_SHUFFLE FRAVASHID_SETTINGS_PREFIX "shuffle"
 #define KEY_OUTPUTS FRAVASHID_SETTINGS_PREFIX "outputs"
+#define KEY_PROFILES FRAVASHID_SETTINGS_PREFIX "profiles"
 
 void fravashid_settings_defaults(struct fravashid_settings *settings)
 {
@@ -55,20 +56,29 @@ void fravashid_settings_load(cfgd_t *cfgd, struct fravashid_settings *settings)
         settings->outputs = list;
         settings->outputs_count = count;
     }
+    list = cfgd_get_strv(cfgd, KEY_PROFILES, &count);
+    if (list) {
+        settings->profiles = list;
+        settings->profiles_count = count;
+    }
 }
 
 void fravashid_settings_free(struct fravashid_settings *settings)
 {
     free(settings->wallpaper);
     cfgd_strv_free(settings->outputs, settings->outputs_count);
+    cfgd_strv_free(settings->profiles, settings->profiles_count);
     memset(settings, 0, sizeof(*settings));
 }
 
 const char *fravashid_settings_spec(const struct fravashid_settings *settings,
-                                    const char *output)
+                                    const char *output, const char *layout)
 {
     const char *spec = fravashid_outputs_lookup(
         (const char *const *)settings->outputs, settings->outputs_count, output);
 
+    if (!spec && layout[0] != '\0')
+        spec = fravashid_outputs_lookup((const char *const *)settings->profiles,
+                                        settings->profiles_count, layout);
     return spec ? spec : settings->wallpaper;
 }

@@ -10,3 +10,12 @@ test_image = executable(
   dependencies: fravashid_deps,
 )
 test('daemon-image', test_image)
+
+test_settings = executable(
+  'test_settings',
+  'test_settings.c',
+  include_directories: [fravashid_src_inc, fravashid_core_inc, check_inc],
+  link_with: [fravashid_daemon, fravashid_core],
+  dependencies: fravashid_deps,
+)
+test('daemon-settings', test_settings)
