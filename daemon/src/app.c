@@ -107,7 +107,7 @@ static void slot_show(struct fravashid_slot *slot)
 static int slot_apply_spec(struct fravashid_slot *slot, bool force)
 {
     struct fravashid_app *app = slot->app;
-    const char *spec = fravashid_settings_spec(&app->settings, slot->output->name);
+    const char *spec = fravashid_settings_spec(&app->settings, slot->output->name, app->layout);
 
     if (!force && slot->spec && strcmp(spec, slot->spec) == 0)
         return 0;
@@ -314,6 +314,16 @@ void fravashid_app_config_event(struct fravashid_app *app)
                           background != app->settings.background))
             slot_show(slot);
     }
+    timer_rearm(app);
+}
+
+void fravashid_app_set_layout(struct fravashid_app *app, const char *name)
+{
+    if (strcmp(app->layout, name) == 0 || strlen(name) >= sizeof(app->layout))
+        return;
+    snprintf(app->layout, sizeof(app->layout), "%s", name);
+    for (size_t i = 0; i < app->slot_count; i++)
+        slot_apply_spec(app->slots[i], false);
     timer_rearm(app);
 }
 

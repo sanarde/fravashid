@@ -31,6 +31,7 @@ struct fravashid_app {
     struct fravashid_source display_source;
     int timer_fd;
     bool config_dirty;
+    char layout[64];
     enum fravashid_backend backend;
     struct fravashid_wl *wl;
     struct fravashid_x11 *x11;
@@ -47,6 +48,7 @@ int fravashid_app_finish(struct fravashid_app *app, int display_readable);
 void fravashid_app_config_event(struct fravashid_app *app);
 void fravashid_app_timer_event(struct fravashid_app *app);
 void fravashid_app_video_event(struct fravashid_app *app, struct fravashid_video *video);
+void fravashid_app_set_layout(struct fravashid_app *app, const char *name);
 void fravashid_app_step(struct fravashid_app *app, int step);
 size_t fravashid_app_current(const struct fravashid_app *app, size_t index,
                              const char **output, const char **path);
