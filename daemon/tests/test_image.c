@@ -57,6 +57,8 @@ static void check_failures_reported(void)
     CHECK(fravashid_image_load(TEST_DATA_DIR "/missing.png", 0, &image) != 0);
     CHECK(image.pixels == NULL);
     CHECK(fravashid_image_load(TEST_DATA_DIR "/../meson.build", 0, &image) != 0);
+    CHECK(fravashid_image_load(TEST_DATA_DIR "/broken.jpg", 0, &image) != 0);
+    CHECK(image.pixels == NULL);
 }
 
 int main(void)
