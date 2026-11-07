@@ -24,8 +24,8 @@ msgstr "fravashi: fravashid не отвечает: %s\n"
 
 #: cli/src/main.c:126
 #, c-format
-msgid "usage: fravashi set [-o OUTPUT] PATH\n"
-msgstr "использование: fravashi set [-o ВЫВОД] ПУТЬ\n"
+msgid "usage: fravashi set [-o OUTPUT | -p PROFILE] PATH\n"
+msgstr "использование: fravashi set [-o ВЫВОД | -p ПРОФИЛЬ] ПУТЬ\n"
 
 #: cli/src/main.c:130
 #, c-format
@@ -44,5 +44,5 @@ msgstr "fravashi: не удалось сохранить настройку (%d)
 
 #: cli/src/main.c:166
 #, c-format
-msgid "usage: fravashi get | next | prev | set [-o OUTPUT] PATH\n"
-msgstr "использование: fravashi get | next | prev | set [-o ВЫВОД] ПУТЬ\n"
+msgid "usage: fravashi get | next | prev | set [-o OUTPUT | -p PROFILE] PATH\n"
+msgstr "использование: fravashi get | next | prev | set [-o ВЫВОД | -p ПРОФИЛЬ] ПУТЬ\n"

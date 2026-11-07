@@ -23,7 +23,7 @@ msgstr ""
 
 #: cli/src/main.c:126
 #, c-format
-msgid "usage: fravashi set [-o OUTPUT] PATH\n"
+msgid "usage: fravashi set [-o OUTPUT | -p PROFILE] PATH\n"
 msgstr ""
 
 #: cli/src/main.c:130
@@ -43,5 +43,5 @@ msgstr ""
 
 #: cli/src/main.c:166
 #, c-format
-msgid "usage: fravashi get | next | prev | set [-o OUTPUT] PATH\n"
+msgid "usage: fravashi get | next | prev | set [-o OUTPUT | -p PROFILE] PATH\n"
 msgstr ""

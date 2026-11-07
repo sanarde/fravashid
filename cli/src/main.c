@@ -15,6 +15,7 @@
 #define INTERFACE "org.nuros.sanar.Fravashi"
 #define KEY_WALLPAPER "/org/nuros/sanar/fravashi/wallpaper"
 #define KEY_OUTPUTS "/org/nuros/sanar/fravashi/outputs"
+#define KEY_PROFILES "/org/nuros/sanar/fravashi/profiles"
 
 static DBusMessage *call(const char *method)
 {
@@ -77,11 +78,11 @@ static int command_get(void)
     return 0;
 }
 
-static int set_output(cfgd_t *cfgd, const char *output, const char *path)
+static int set_entry(cfgd_t *cfgd, const char *key, const char *output, const char *path)
 {
     size_t count;
     size_t length = strlen(output);
-    char **list = cfgd_get_strv(cfgd, KEY_OUTPUTS, &count);
+    char **list = cfgd_get_strv(cfgd, key, &count);
     const char **items = calloc(count + 1, sizeof(*items));
     char *entry;
     size_t n = 0;
@@ -102,7 +103,7 @@ static int set_output(cfgd_t *cfgd, const char *output, const char *path)
             items[n++] = list[i];
     }
     items[n++] = entry;
-    status = cfgd_set_strv(cfgd, KEY_OUTPUTS, items, n);
+    status = cfgd_set_strv(cfgd, key, items, n);
     cfgd_strv_free(list, count);
     free(items);
     free(entry);
@@ -112,18 +113,21 @@ static int set_output(cfgd_t *cfgd, const char *output, const char *path)
 static int command_set(int argc, char **argv)
 {
     const char *output = NULL;
+    const char *key = KEY_OUTPUTS;
     const char *path;
     char resolved[PATH_MAX];
     cfgd_t *cfgd;
     int status;
 
-    if (argc == 5 && strcmp(argv[2], "-o") == 0) {
+    if (argc == 5 && (strcmp(argv[2], "-o") == 0 || strcmp(argv[2], "-p") == 0)) {
         output = argv[3];
         path = argv[4];
+        if (argv[2][1] == 'p')
+            key = KEY_PROFILES;
     } else if (argc == 3) {
         path = argv[2];
     } else {
-        fprintf(stderr, _("usage: fravashi set [-o OUTPUT] PATH\n"));
+        fprintf(stderr, _("usage: fravashi set [-o OUTPUT | -p PROFILE] PATH\n"));
         return 2;
     }
     if (path[0] != '\0' && !realpath(path, resolved)) {
@@ -138,7 +142,7 @@ static int command_set(int argc, char **argv)
         fprintf(stderr, _("fravashi: cannot open the settings\n"));
         return 1;
     }
-    status = output ? set_output(cfgd, output, resolved)
+    status = output ? set_entry(cfgd, key, output, resolved)
                     : cfgd_set_string(cfgd, KEY_WALLPAPER, resolved);
     cfgd_close(cfgd);
     if (status != CFGD_OK) {
@@ -163,6 +167,6 @@ int main(int argc, char **argv)
     if (argc >= 2 && strcmp(argv[1], "set") == 0)
         return command_set(argc, argv);
 
-    fprintf(stderr, _("usage: fravashi get | next | prev | set [-o OUTPUT] PATH\n"));
+    fprintf(stderr, _("usage: fravashi get | next | prev | set [-o OUTPUT | -p PROFILE] PATH\n"));
     return 2;
 }
