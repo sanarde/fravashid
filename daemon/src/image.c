@@ -76,7 +76,7 @@ static int load_jpeg(FILE *file, struct fravashid_image *image)
 {
     struct jpeg_decompress_struct cinfo;
     struct jpeg_failure failure;
-    uint32_t *pixels = NULL;
+    uint32_t *volatile pixels = NULL;
 
     cinfo.err = jpeg_std_error(&failure.manager);
     failure.manager.error_exit = jpeg_fail;
